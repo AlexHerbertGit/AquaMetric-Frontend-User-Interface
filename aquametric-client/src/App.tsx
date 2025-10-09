@@ -1,11 +1,14 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
 import CsvIngestion from "./components/CsvIngestion";
 
 export default function App() {
   return (
-    <main style={{ padding: 24, fontFamily: "system-ui, sans-serif" }}>
-      <h1>AquaMetric Frontend</h1>
-      <p>API: {import.meta.env.VITE_API_URL}</p>
-      <CsvIngestion />
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/ingestion" element={<div style={{ padding: 24 }}><h1>Catch File Upload</h1><CsvIngestion /></div>} />
+      </Routes>
+    </BrowserRouter>
   );
 }
