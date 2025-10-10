@@ -1,67 +1,59 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { type AuthResponse, type AuthUser, fetchMe, loginUser, registerUser } from "../services/auth";
-import { clearToken, setToken } from "../lib/auth";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { login as apiLogin, register as apiRegister, me as apiMe, logout as apiLogout } from "../services/auth";
+import type { AuthUser, LoginPayload, RegisterPayload } from "../types/auth";
 
-type AuthState = {
+interface Ctx {
   user: AuthUser | null;
   loading: boolean;
-  error: string | null;
-  register: (input: { organizationId: number; firstName: string; lastName: string; email: string; password: string; }) => Promise<void>;
-  login: (email: string, password: string) => Promise<void>;
+  login: (p: LoginPayload) => Promise<void>;
+  register: (p: RegisterPayload) => Promise<void>; // ✨ added
   logout: () => void;
-};
+  refresh: () => Promise<void>;
+}
 
-const AuthCtx = createContext<AuthState | null>(null);
+const AuthCtx = createContext<Ctx | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => { // hydrate from token
-    (async () => {
-      setLoading(true);
-      try {
-        const me = await fetchMe();
-        setUser(me);
-      } catch { /* not logged in or /me unavailable */ }
-      finally { setLoading(false); }
-    })();
-  }, []);
+  useEffect(() => { void refresh(); }, []);
 
-  async function register(input: { organizationId: number; firstName: string; lastName: string; email: string; password: string; }) {
-    setLoading(true); setError(null);
+  async function refresh() {
+    setLoading(true);
     try {
-      const res: AuthResponse = await registerUser(input);
-      setToken(res.token);
-      setUser(res.user);
-    } catch (e: any) {
-      setError(e?.response?.data?.message ?? e?.message ?? "Registration failed");
-      throw e;
-    } finally { setLoading(false); }
+      const token = localStorage.getItem("am_token");
+      setUser(token ? await apiMe() : null);
+    } finally {
+      setLoading(false);
+    }
   }
-  async function login(email: string, password: string) {
-    setLoading(true); setError(null);
-    try {
-      const res: AuthResponse = await loginUser({ email, password });
-      setToken(res.token);
-      setUser(res.user);
-    } catch (e: any) {
-      setError(e?.response?.data?.message ?? e?.message ?? "Login failed");
-      throw e;
-    } finally { setLoading(false); }
+
+  async function login(p: LoginPayload) {
+    await apiLogin(p);        // stores token
+    const u = await apiMe();  // fetch user
+    setUser(u);
+}
+
+  async function register(p: RegisterPayload) {
+    const res = await apiRegister(p); // stores token in localStorage
+    setUser(res.user);                // auto-login after register
   }
+
   function logout() {
-    clearToken();
+    apiLogout();
     setUser(null);
   }
 
-  const value = useMemo(() => ({ user, loading, error, register, login, logout }), [user, loading, error]);
-  return <AuthCtx.Provider value={value}>{children}</AuthCtx.Provider>;
+  return (
+    <AuthCtx.Provider value={{ user, loading, login, register, logout, refresh }}>
+      {children}
+    </AuthCtx.Provider>
+  );
 }
 
 export function useAuth() {
   const ctx = useContext(AuthCtx);
-  if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
+  if (!ctx) throw new Error("useAuth must be used within <AuthProvider>");
   return ctx;
 }

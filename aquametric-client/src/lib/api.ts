@@ -1,18 +1,26 @@
 import axios from "axios";
-import { getToken } from "./auth";
 
-const baseURL = import.meta.env.VITE_API_URL as string | undefined;
-if (!baseURL) throw new Error("VITE_API_URL is not set");
-
-const api = axios.create({ baseURL });
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:5017",
+});
 
 api.interceptors.request.use((config) => {
-  const token = getToken();
-  if (token) {
-    config.headers = config.headers ?? {};
-    (config.headers as any).Authorization = `Bearer ${token}`;
-  }
+  const token = localStorage.getItem("am_token");
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
+
+// NEW: handle 401 globally
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err?.response?.status === 401) {
+      localStorage.removeItem("am_token");
+      // hard redirect so state resets cleanly
+      window.location.href = "/login";
+    }
+    return Promise.reject(err);
+  }
+);
 
 export default api;

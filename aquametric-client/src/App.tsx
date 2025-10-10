@@ -1,14 +1,34 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import TopNav from "./components/TopNav";
+import Protected from "./components/Protected";
 import Home from "./pages/Home";
-import CsvIngestion from "./components/CsvIngestion";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import VesselCreate from "./pages/VesselCreate";
+import VesselList from "./pages/VesselList";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/ingestion" element={<div style={{ padding: 24 }}><h1>Catch File Upload</h1><CsvIngestion /></div>} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <TopNav />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+
+          <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
+
+          {/* placeholders to implement next */}
+          <Route path="/trips/new" element={<Protected><div style={{ padding: 16 }}>Trip form</div></Protected>} />
+          <Route path="/trips/:tripId/upload" element={<Protected><div style={{ padding: 16 }}>CSV upload</div></Protected>} />
+          <Route path="/vessels/new" element={<Protected><VesselCreate /></Protected>} />
+          <Route path="/vessels" element={<Protected><VesselList /></Protected>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
