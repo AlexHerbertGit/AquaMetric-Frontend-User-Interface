@@ -115,3 +115,233 @@ input:focus, select:focus { border-color: var(--accent); }
   white-space: nowrap;
 }
 .table thead th { position: sticky; top: 0; background: var(--card); }
+
+/* TripCreate.css */
+/* Scope everything to this page root to avoid bleed */
+.trip-create {
+  --tc-bg: #0b0c10;
+  --tc-card: #ffffff;
+  --tc-border: #e5e7eb;
+  --tc-text: #0f172a;
+  --tc-muted: #64748b;
+  --tc-primary: #2563eb;
+  --tc-primary-contrast: #ffffff;
+  --tc-danger: #ef4444;
+  --tc-danger-ink: #7f1d1d;
+  --tc-radius: 14px;
+  --tc-gap: 1rem;
+  --tc-gap-lg: 1.25rem;
+  --tc-input-h: 44px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .trip-create {
+    --tc-bg: #0b0c10;
+    --tc-card: #10151c;
+    --tc-border: #1f2937;
+    --tc-text: #e5e7eb;
+    --tc-muted: #9aa4b2;
+    --tc-primary: #60a5fa;
+    --tc-primary-contrast: #0b1220;
+    --tc-danger: #f87171;
+    --tc-danger-ink: #fecaca;
+  }
+}
+
+.trip-create {
+  background: var(--tc-bg);
+  min-height: 100%;
+  padding: clamp(16px, 2.5vw, 28px);
+}
+
+.trip-create .tc-container {
+  max-width: 920px;
+  margin-inline: auto;
+}
+
+.trip-create h1 {
+  color: var(--tc-text);
+  font-size: clamp(1.5rem, 1.4rem + 1vw, 2rem);
+  line-height: 1.2;
+  margin: 0 0 1rem;
+}
+
+.trip-create .tc-card {
+  background: var(--tc-card);
+  border: 1px solid var(--tc-border);
+  border-radius: var(--tc-radius);
+  padding: clamp(16px, 2vw, 22px);
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.05),
+    0 6px 24px rgba(0,0,0,0.06);
+}
+
+/* Alerts */
+.trip-create .tc-alert {
+  border: 1px solid color-mix(in oklab, var(--tc-danger) 40%, black 0%);
+  background: color-mix(in oklab, var(--tc-danger) 12%, transparent 88%);
+  color: var(--tc-danger-ink);
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin-bottom: var(--tc-gap);
+  font-size: 0.95rem;
+}
+
+/* Form layout */
+.trip-create form {
+  display: grid;
+  gap: var(--tc-gap-lg);
+}
+
+.trip-create .tc-grid {
+  display: grid;
+  gap: var(--tc-gap);
+}
+
+.trip-create .tc-grid--2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.trip-create .tc-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 860px) {
+  .trip-create .tc-grid--2,
+  .trip-create .tc-grid--3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Field */
+.trip-create .tc-field {
+  display: grid;
+  gap: 6px;
+}
+
+.trip-create label {
+  color: var(--tc-muted);
+  font-size: 0.9rem;
+  user-select: none;
+}
+
+/* Controls */
+.trip-create input[type="text"],
+.trip-create input[type="number"],
+.trip-create input[type="datetime-local"],
+.trip-create select,
+.trip-create textarea {
+  height: var(--tc-input-h);
+  width: 100%;
+  background: transparent;
+  color: var(--tc-text);
+  border: 1px solid var(--tc-border);
+  border-radius: 12px;
+  padding: 0 12px;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+.trip-create textarea {
+  min-height: 96px;
+  padding: 10px 12px;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.trip-create input[readonly],
+.trip-create textarea[readonly] {
+  background: color-mix(in oklab, var(--tc-card) 90%, var(--tc-bg) 10%);
+  color: var(--tc-muted);
+}
+
+.trip-create input:focus,
+.trip-create select:focus,
+.trip-create textarea:focus {
+  border-color: var(--tc-primary);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--tc-primary) 24%, transparent);
+}
+
+/* Buttons */
+.trip-create .tc-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.trip-create .btn {
+  appearance: none;
+  border: 1px solid var(--tc-border);
+  background: var(--tc-card);
+  color: var(--tc-text);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .06s ease, background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.trip-create .btn:hover {
+  transform: translateY(-1px);
+}
+
+.trip-create .btn:active {
+  transform: translateY(0);
+}
+
+.trip-create .btn-primary {
+  background: var(--tc-primary);
+  color: var(--tc-primary-contrast);
+  border-color: transparent;
+}
+
+.trip-create .btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Helper row (Days at Sea + Distance) */
+.trip-create .tc-helper {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--tc-gap);
+}
+@media (max-width: 860px) {
+  .trip-create .tc-helper {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Details (payload preview) */
+.trip-create details {
+  border: 1px dashed var(--tc-border);
+  border-radius: 12px;
+  padding: 8px 10px;
+  color: var(--tc-muted);
+}
+
+.trip-create details > summary {
+  cursor: pointer;
+  list-style: none;
+  font-weight: 600;
+}
+
+.trip-create details > summary::-webkit-details-marker { display: none; }
+.trip-create pre {
+  margin: 10px 0 0;
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--tc-card) 86%, var(--tc-bg) 14%);
+  padding: 12px;
+  overflow: auto;
+  max-height: 320px;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+/* Small text link */
+.trip-create .tc-muted-link {
+  color: var(--tc-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.trip-create .tc-muted-link:hover { text-decoration: none; }

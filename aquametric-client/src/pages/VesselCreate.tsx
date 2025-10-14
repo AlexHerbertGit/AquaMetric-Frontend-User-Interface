@@ -9,7 +9,7 @@ type FormState = {
   ownerName: string;
   homePort: string;
   vesselType: string;
-  maxCapacityKg: string;  // keep string to match API; convert if you switch API to numeric
+  maxCapacityKg: number;  // keep string to match API; convert if you switch API to numeric
   gearTypesUsed: string;
 };
 
@@ -24,7 +24,7 @@ export default function VesselCreate() {
     ownerName: "",
     homePort: "",
     vesselType: "",
-    maxCapacityKg: "",
+    maxCapacityKg: 0,
     gearTypesUsed: ""
   });
 
@@ -53,7 +53,7 @@ export default function VesselCreate() {
         ownerName: form.ownerName.trim() || undefined,
         homePort: form.homePort.trim() || undefined,
         vesselType: form.vesselType.trim() || undefined,
-        maxCapacityKg: form.maxCapacityKg.trim() || undefined,
+        maxCapacityKg: form.maxCapacityKg,
         gearTypesUsed: form.gearTypesUsed.trim() || undefined
       });
 

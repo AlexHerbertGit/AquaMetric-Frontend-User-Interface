@@ -5,7 +5,7 @@ export interface VesselCreateDto {
   ownerName?: string;
   homePort?: string;
   vesselType?: string;
-  maxCapacityKg?: string;                 // keep as string if API expects text; change to number if numeric
+  maxCapacityKg?: number;                 // keep as string if API expects text; change to number if numeric
   gearTypesUsed?: string;
 }
 

@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { listVesselsByOrg } from "../services/vessels";
 import type { VesselReadDto } from "../types/vessel";
 import VesselTable from "../components/VesselTable";
+import TripsTable from "../components/TripsTable";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -56,6 +57,9 @@ export default function Dashboard() {
         </div>
         {err && <div className="error">{err}</div>}
         {loading ? <div className="card">Loading vessels…</div> : <VesselTable rows={rows} />}
+      </div>
+      <div className="card">
+        <TripsTable />
       </div>
     </div>
   );

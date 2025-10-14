@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import VesselCreate from "./pages/VesselCreate";
 import VesselList from "./pages/VesselList";
+import TripCreate from "./pages/TripCreate";
 
 export default function App() {
   return (
@@ -22,10 +23,10 @@ export default function App() {
           <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
 
           {/* placeholders to implement next */}
-          <Route path="/trips/new" element={<Protected><div style={{ padding: 16 }}>Trip form</div></Protected>} />
           <Route path="/trips/:tripId/upload" element={<Protected><div style={{ padding: 16 }}>CSV upload</div></Protected>} />
           <Route path="/vessels/new" element={<Protected><VesselCreate /></Protected>} />
           <Route path="/vessels" element={<Protected><VesselList /></Protected>} />
+          <Route path="/trips/new" element={<Protected><TripCreate /></Protected>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
