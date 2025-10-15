@@ -46,7 +46,7 @@ export default function Dashboard() {
         <div className="card">
           <h3>3) Upload CSV</h3>
           <p>Ingest MPI e-log data for your trip.</p>
-          <Link to="/trips/123/upload" className="btn">Upload CSV</Link>
+          <Link to="/ingestion" className="btn">Upload CSV</Link>
         </div>
       </div>
 

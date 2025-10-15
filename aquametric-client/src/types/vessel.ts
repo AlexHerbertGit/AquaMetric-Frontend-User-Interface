@@ -5,11 +5,11 @@ export interface VesselCreateDto {
   ownerName?: string;
   homePort?: string;
   vesselType?: string;
-  maxCapacityKg?: number;                 // keep as string if API expects text; change to number if numeric
+  maxCapacityKg?: number;                 
   gearTypesUsed?: string;
 }
 
 export interface VesselReadDto extends VesselCreateDto {
-  fishingVesselId: number;                // ✅ fixed typo
+  fishingVesselId: number;                
   createdAt?: string;
 }

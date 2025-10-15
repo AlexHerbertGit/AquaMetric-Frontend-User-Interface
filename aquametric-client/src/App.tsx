@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import VesselCreate from "./pages/VesselCreate";
 import VesselList from "./pages/VesselList";
 import TripCreate from "./pages/TripCreate";
+import CsvIngestion from "./pages/CsvIngestion";
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/vessels/new" element={<Protected><VesselCreate /></Protected>} />
           <Route path="/vessels" element={<Protected><VesselList /></Protected>} />
           <Route path="/trips/new" element={<Protected><TripCreate /></Protected>} />
+          <Route path="/ingestion" element={<CsvIngestion />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

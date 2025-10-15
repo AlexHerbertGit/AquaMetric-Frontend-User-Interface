@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { listTripsByUser, getCatchesForTrip } from "../services/trips";
+import { getCatchMetaData, getCatchSpecies } from "../services/catches";
 
 type TripReadDto = {
   fishingTripId: number;
@@ -40,6 +41,33 @@ type CatchReadDto = {
   targetSpeciesCode?: string | null;
   statisticalAreaCode?: string | null;
   nfpsPresent?: boolean | null;
+  amendmentReason?: string | null;
+  notes?: string | null;
+};
+
+type CatchMetaDataReadDto = {
+  catchMetaDataId: number;
+  catchId: number;
+  waterTempC?: number | null;
+  catchDepthM?: number | null;
+  visibilityM?: number | null;
+  gearType?: string | null;
+  chlorophyllAUgL?: number | null;
+  phytoCellsPerL?: number | null;
+  averageHooksPerLine?: number | null;
+  bottomDepthMetres?: number | null;
+  hooksNumber?: number | null;
+  linesHaulsCount?: number | null;
+  mitigationDeviceCode?: string | null;
+};
+
+type CatchSpeciesReadDto = {
+  catchSpeciesId: number;
+  catchId: number;
+  fishSpeciesId: number;
+  quantity?: number | null;
+  avgLengthCm?: number | null;
+  greenweightKg?: number | null;
 };
 
 function fmtDate(d?: string | null) {
@@ -51,9 +79,7 @@ function fmtDate(d?: string | null) {
 
 function fmtNum(n?: number | null, digits = 1) {
   if (n == null) return "—";
-  const f = new Intl.NumberFormat(undefined, {
-    maximumFractionDigits: digits,
-  });
+  const f = new Intl.NumberFormat(undefined, { maximumFractionDigits: digits });
   return f.format(n);
 }
 
@@ -66,6 +92,8 @@ export default function TripsTable() {
   // details state (expand-on-demand fetch)
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [catchesByTrip, setCatchesByTrip] = useState<Record<number, CatchReadDto[]>>({});
+  const [metaByCatch, setMetaByCatch] = useState<Record<number, CatchMetaDataReadDto[]>>({});
+  const [speciesByCatch, setSpeciesByCatch] = useState<Record<number, CatchSpeciesReadDto[]>>({});
   const [loadingDetails, setLoadingDetails] = useState(false);
 
   useEffect(() => {
@@ -86,9 +114,7 @@ export default function TripsTable() {
         if (!ignore) setLoading(false);
       }
     })();
-    return () => {
-      ignore = true;
-    };
+    return () => { ignore = true; };
   }, [user?.userId]);
 
   async function toggleExpand(tripId: number) {
@@ -98,16 +124,26 @@ export default function TripsTable() {
     }
     setExpandedId(tripId);
 
-    if (!catchesByTrip[tripId]) {
-      try {
-        setLoadingDetails(true);
-        const rows = await getCatchesForTrip(tripId);
-        setCatchesByTrip((m) => ({ ...m, [tripId]: rows }));
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoadingDetails(false);
-      }
+    // If we already have catches + details, no need to refetch
+    if (catchesByTrip[tripId] && catchesByTrip[tripId].length > 0) return;
+
+    try {
+      setLoadingDetails(true);
+      const rows = await getCatchesForTrip(tripId);
+      setCatchesByTrip((m) => ({ ...m, [tripId]: rows ?? [] }));
+
+      // Fetch metadata & species for all catches in parallel
+      await Promise.all(
+        (rows ?? []).map(async (c) => {
+          const [md, sp] = await Promise.all([getCatchMetaData(c.catchId), getCatchSpecies(c.catchId)]);
+          setMetaByCatch((m) => ({ ...m, [c.catchId]: md ?? [] }));
+          setSpeciesByCatch((m) => ({ ...m, [c.catchId]: sp ?? [] }));
+        })
+      );
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingDetails(false);
     }
   }
 
@@ -159,7 +195,9 @@ export default function TripsTable() {
                     coords={coords}
                     expanded={expandedId === t.fishingTripId}
                     onToggle={() => toggleExpand(t.fishingTripId)}
-                    catches={catchesByTrip[t.fishingTripId]}
+                    catches={catchesByTrip[t.fishingTripId] ?? []}
+                    metaByCatch={metaByCatch}
+                    speciesByCatch={speciesByCatch}
                     loadingDetails={loadingDetails && expandedId === t.fishingTripId}
                   />
                 );
@@ -178,13 +216,17 @@ function FragmentRow({
   expanded,
   onToggle,
   catches,
+  metaByCatch,
+  speciesByCatch,
   loadingDetails,
 }: {
   trip: TripReadDto;
   coords: string;
   expanded: boolean;
   onToggle: () => void;
-  catches?: CatchReadDto[];
+  catches: CatchReadDto[];
+  metaByCatch: Record<number, CatchMetaDataReadDto[]>;
+  speciesByCatch: Record<number, CatchSpeciesReadDto[]>;
   loadingDetails: boolean;
 }) {
   return (
@@ -214,7 +256,12 @@ function FragmentRow({
             {loadingDetails ? (
               <div className="text-sm text-gray-500">Loading details…</div>
             ) : (
-              <TripDetails trip={trip} catches={catches ?? []} />
+              <TripDetails
+                trip={trip}
+                catches={catches}
+                metaByCatch={metaByCatch}
+                speciesByCatch={speciesByCatch}
+              />
             )}
           </td>
         </tr>
@@ -223,7 +270,17 @@ function FragmentRow({
   );
 }
 
-function TripDetails({ trip, catches }: { trip: TripReadDto; catches: CatchReadDto[] }) {
+function TripDetails({
+  trip,
+  catches,
+  metaByCatch,
+  speciesByCatch,
+}: {
+  trip: TripReadDto;
+  catches: CatchReadDto[];
+  metaByCatch: Record<number, CatchMetaDataReadDto[]>;
+  speciesByCatch: Record<number, CatchSpeciesReadDto[]>;
+}) {
   return (
     <div className="grid gap-3 md:grid-cols-3">
       <div className="tc-card">
@@ -250,18 +307,69 @@ function TripDetails({ trip, catches }: { trip: TripReadDto; catches: CatchReadD
         {catches.length === 0 ? (
           <div className="text-sm text-gray-600">No catches (yet).</div>
         ) : (
-          <ul className="text-sm space-y-2">
-            {catches.map((c) => (
-              <li key={c.catchId} className="border-b border-gray-200 pb-2">
-                <div className="font-medium">
-                  Catch #{c.catchId} — {c.targetSpeciesCode ?? "—"} ({c.fishingMethodCode ?? "—"})
-                </div>
-                <div className="text-xs">
-                  {fmtDate(c.startDateTime)} → {fmtDate(c.finishDateTime)} · Weight: {fmtNum(c.totalWeightKg, 1)} kg
-                  {c.nfpsPresent ? " · NFPS present" : ""}
-                </div>
-              </li>
-            ))}
+          <ul className="text-sm space-y-4">
+            {catches.map((c) => {
+              const md = metaByCatch[c.catchId]?.[0]; // one metadata row per catch
+              const sp = speciesByCatch[c.catchId] ?? [];
+              return (
+                <li key={c.catchId} className="border-b border-gray-200 pb-3">
+                  <div className="font-medium">
+                    Catch #{c.catchId} — {c.targetSpeciesCode ?? "—"} ({c.fishingMethodCode ?? "—"})
+                  </div>
+                  <div className="text-xs mb-2">
+                    {fmtDate(c.startDateTime)} → {fmtDate(c.finishDateTime)} · Weight: {fmtNum(c.totalWeightKg, 1)} kg
+                    {c.nfpsPresent ? " · NFPS present" : ""}
+                  </div>
+
+                  {/* Metadata summary */}
+                  {!md ? (
+                    <div className="text-xs text-gray-600">No metadata.</div>
+                  ) : (
+                    <div className="text-xs grid" style={{ gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+                      <span className="text-gray-500">Water Temp (°C)</span><span>{fmtNum(md.waterTempC)}</span>
+                      <span className="text-gray-500">Catch Depth (m)</span><span>{fmtNum(md.catchDepthM)}</span>
+                      <span className="text-gray-500">Visibility (m)</span><span>{fmtNum(md.visibilityM)}</span>
+                      <span className="text-gray-500">Bottom Depth (m)</span><span>{fmtNum(md.bottomDepthMetres)}</span>
+                      <span className="text-gray-500">Chl-a (µg/L)</span><span>{fmtNum(md.chlorophyllAUgL, 3)}</span>
+                      <span className="text-gray-500">Phyto Cells (/L)</span><span>{fmtNum(md.phytoCellsPerL, 0)}</span>
+                      <span className="text-gray-500">Avg Hooks/Line</span><span>{fmtNum(md.averageHooksPerLine, 0)}</span>
+                      <span className="text-gray-500">Hooks Number</span><span>{fmtNum(md.hooksNumber, 0)}</span>
+                      <span className="text-gray-500">Lines/Hauls</span><span>{fmtNum(md.linesHaulsCount, 0)}</span>
+                      <span className="text-gray-500">Gear</span><span>{md.gearType ?? "—"}</span>
+                      <span className="text-gray-500">Mitigation</span><span>{md.mitigationDeviceCode ?? "—"}</span>
+                    </div>
+                  )}
+
+                  {/* Species table */}
+                  {sp.length === 0 ? (
+                    <div className="text-xs text-gray-600 mt-2">No species rows.</div>
+                  ) : (
+                    <div className="overflow-x-auto mt-2">
+                      <table className="min-w-full text-xs">
+                        <thead>
+                          <tr className="text-left text-gray-500">
+                            <th className="py-1 pr-3">SpeciesId</th>
+                            <th className="py-1 pr-3">Qty</th>
+                            <th className="py-1 pr-3">Avg Len (cm)</th>
+                            <th className="py-1 pr-3">Green Wt (kg)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {sp.map((row) => (
+                            <tr key={row.catchSpeciesId} className="border-t border-gray-200">
+                              <td className="py-1 pr-3">{row.fishSpeciesId}</td>
+                              <td className="py-1 pr-3">{fmtNum(row.quantity, 0)}</td>
+                              <td className="py-1 pr-3">{fmtNum(row.avgLengthCm, 1)}</td>
+                              <td className="py-1 pr-3">{fmtNum(row.greenweightKg, 1)}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </div>
