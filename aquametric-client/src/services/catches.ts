@@ -44,27 +44,6 @@ function unbox<T>(data: any): T {
 }
 
 export async function listCatchesByTrip(fishingTripId: number): Promise<CatchReadDto[]> {
-  const { data } = await api.get("/api/catches", { params: { fishingTripId } });
+  const { data } = await api.get("/api/catchquery/by-trip", { params: { fishingTripId } });
   return unbox<CatchReadDto[]>(data);
-}
-
-// Try both route styles, return array either from {items: []} or raw
-export async function getCatchMetaData(catchId: number): Promise<CatchMetaDataReadDto[]> {
-  try {
-    const { data } = await api.get("/api/catchmetadata", { params: { catchId } });
-    return data?.items ?? data ?? [];
-  } catch {
-    const { data } = await api.get(`/api/catchmetadata/by-catch/${catchId}`);
-    return data?.items ?? data ?? [];
-  }
-}
-
-export async function getCatchSpecies(catchId: number): Promise<CatchSpeciesReadDto[]> {
-  try {
-    const { data } = await api.get("/api/catchspecies", { params: { catchId } });
-    return data?.items ?? data ?? [];
-  } catch {
-    const { data } = await api.get(`/api/catchspecies/by-catch/${catchId}`);
-    return data?.items ?? data ?? [];
-  }
 }

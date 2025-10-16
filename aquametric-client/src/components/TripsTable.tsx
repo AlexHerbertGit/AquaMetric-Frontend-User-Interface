@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { listTripsByUser, getCatchesForTrip } from "../services/trips";
-import { getCatchMetaData, getCatchSpecies } from "../services/catches";
+import { listTripsByUser, getCatchesForTrip, type CatchReadDto, type CatchMetaDataReadDto, type CatchSpeciesReadDto } from "../services/trips";
 
 type TripReadDto = {
   fishingTripId: number;
@@ -29,45 +28,6 @@ type TripReadDto = {
   masterOrFisherName?: string | null;
 
   notes?: string | null;
-};
-
-type CatchReadDto = {
-  catchId: number;
-  fishingTripId: number;
-  startDateTime?: string | null;
-  finishDateTime?: string | null;
-  totalWeightKg?: number | null;
-  fishingMethodCode?: string | null;
-  targetSpeciesCode?: string | null;
-  statisticalAreaCode?: string | null;
-  nfpsPresent?: boolean | null;
-  amendmentReason?: string | null;
-  notes?: string | null;
-};
-
-type CatchMetaDataReadDto = {
-  catchMetaDataId: number;
-  catchId: number;
-  waterTempC?: number | null;
-  catchDepthM?: number | null;
-  visibilityM?: number | null;
-  gearType?: string | null;
-  chlorophyllAUgL?: number | null;
-  phytoCellsPerL?: number | null;
-  averageHooksPerLine?: number | null;
-  bottomDepthMetres?: number | null;
-  hooksNumber?: number | null;
-  linesHaulsCount?: number | null;
-  mitigationDeviceCode?: string | null;
-};
-
-type CatchSpeciesReadDto = {
-  catchSpeciesId: number;
-  catchId: number;
-  fishSpeciesId: number;
-  quantity?: number | null;
-  avgLengthCm?: number | null;
-  greenweightKg?: number | null;
 };
 
 function fmtDate(d?: string | null) {
@@ -133,13 +93,10 @@ export default function TripsTable() {
       setCatchesByTrip((m) => ({ ...m, [tripId]: rows ?? [] }));
 
       // Fetch metadata & species for all catches in parallel
-      await Promise.all(
-        (rows ?? []).map(async (c) => {
-          const [md, sp] = await Promise.all([getCatchMetaData(c.catchId), getCatchSpecies(c.catchId)]);
-          setMetaByCatch((m) => ({ ...m, [c.catchId]: md ?? [] }));
-          setSpeciesByCatch((m) => ({ ...m, [c.catchId]: sp ?? [] }));
-        })
-      );
+       for (const c of rows ?? []) {
+       setMetaByCatch((m) => ({ ...m, [c.catchId]: c.metaData ? [c.metaData] : [] }));
+       setSpeciesByCatch((m) => ({ ...m, [c.catchId]: c.species ?? [] }));
+    }
     } catch (e) {
       console.error(e);
     } finally {

@@ -1,3 +1,4 @@
+// src/services/trips.ts
 import api from "../lib/api";
 
 export type TripCreatePayload = {
@@ -8,6 +9,71 @@ export type TripCreatePayload = {
   averageSpeedKmh: number;
   daysAtSea: number;
   totalDistanceKm: number;
+};
+
+export type TripReadDto = {
+  fishingTripId: number;
+  fishingVesselId: number;
+  fishingVesselName?: string;
+  userId: number;
+  clientNumber?: string | null;
+  departureDateTime?: string | null;
+  returnDateTime?: string | null;
+  totalDistanceKm?: number | null;
+  daysAtSea?: number | null;
+  averageSpeedKmh?: number | null;
+  startLatitude?: number | null;
+  startLongitude?: number | null;
+  endLatitude?: number | null;
+  endLongitude?: number | null;
+  isVesselUsed?: boolean | null;
+  landingPortCode?: string | null;
+  landingCode?: string | null;
+  masterOrFisherName?: string | null;
+  notes?: string | null;
+};
+
+export type CatchMetaDataReadDto = {
+  catchMetaDataId: number;
+  catchId: number;
+  waterTempC?: number | null;
+  catchDepthM?: number | null;
+  visibilityM?: number | null;
+  gearType?: string | null;
+  chlorophyllAUgL?: number | null;
+  phytoCellsPerL?: number | null;
+  averageHooksPerLine?: number | null;
+  bottomDepthMetres?: number | null;
+  hooksNumber?: number | null;
+  linesHaulsCount?: number | null;
+  mitigationDeviceCode?: string | null;
+};
+
+export type CatchSpeciesReadDto = {
+  catchSpeciesId: number;
+  catchId: number;
+  fishSpeciesId: number;
+  quantity?: number | null;
+  avgLengthCm?: number | null;
+  greenweightKg?: number | null;
+};
+
+export type CatchReadDto = {
+  catchId: number;
+  fishingTripId: number;
+  startDateTime?: string | null;
+  finishDateTime?: string | null;
+  totalWeightKg?: number | null;
+  fishingMethodCode?: string | null;
+  targetSpeciesCode?: string | null;
+  statisticalAreaCode?: string | null;
+  nfpsPresent?: boolean | null;
+  amendmentReason?: string | null;
+  notes?: string | null;
+
+  // NEW: hydrated by GetByTripAsync server-side
+  metaData?: CatchMetaDataReadDto | null;
+  species?: CatchSpeciesReadDto[];
 };
 
 export async function createTrip(payload: TripCreatePayload) {
@@ -24,58 +90,12 @@ export async function createTrip(payload: TripCreatePayload) {
   return api.post("/api/fishingtrips", body);
 }
 
-export type TripReadDto = {
-  fishingTripId: number;
-  fishingVesselId: number;
-  fishingVesselName?: string;
-  userId: number;
-
-  clientNumber?: string | null;
-  departureDateTime?: string | null;
-  returnDateTime?: string | null;
-
-  totalDistanceKm?: number | null;
-  daysAtSea?: number | null;
-  averageSpeedKmh?: number | null;
-
-  startLatitude?: number | null;
-  startLongitude?: number | null;
-  endLatitude?: number | null;
-  endLongitude?: number | null;
-
-  isVesselUsed?: boolean | null;
-  landingPortCode?: string | null;
-  landingCode?: string | null;
-  masterOrFisherName?: string | null;
-
-  notes?: string | null;
-};
-
 export async function listTripsByUser(userId: number): Promise<TripReadDto[]> {
-  if (!userId || userId <= 0) return [];
-  try {
-    const { data } = await api.get(`/api/FishingTrips/user/${userId}`);
-    return data?.items ?? data ?? [];
-  } catch {
-    // secondary fallback: query-param style if your controller supports it
-    const { data } = await api.get(`/api/fishingTrips`, { params: { userId } });
-    return data?.items ?? data ?? [];
-  }
+  const { data } = await api.get(`/api/fishingtrips/user/${userId}`);
+  return data;
 }
 
-export type CatchReadDto = {
-  catchId: number;
-  fishingTripId: number;
-  startDateTime?: string | null;
-  finishDateTime?: string | null;
-  totalWeightKg?: number | null;
-  fishingMethodCode?: string | null;
-  targetSpeciesCode?: string | null;
-  statisticalAreaCode?: string | null;
-  nfpsPresent?: boolean | null;
-};
-
-export async function getCatchesForTrip(fishingTripId: number): Promise<CatchReadDto[]> {
-  const res = await api.get(`/api/catches`, { params: { fishingTripId } });
-  return res.data?.items ?? res.data ?? [];
+export async function getCatchesForTrip(tripId: number): Promise<CatchReadDto[]> {
+  const { data } = await api.get(`/api/catchquery/by-trip/${tripId}`);
+  return data;
 }
