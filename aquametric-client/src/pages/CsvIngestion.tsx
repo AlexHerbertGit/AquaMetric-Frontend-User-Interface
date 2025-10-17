@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { listTripsByUser, type TripReadDto } from "../services/trips";
 import { ingestTripCsv } from "../services/ingestion";
-import "../App.css"; // reuse the nice styles
+import "../App.css"; 
 
 export default function CsvIngestion() {
   const navigate = useNavigate();
