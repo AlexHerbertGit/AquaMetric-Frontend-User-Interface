@@ -9,7 +9,7 @@ export default function Landing() {
       </div>
       <div className="stack-lg">
         <div className="stack-sm text-center">
-          <h1 className="display">Steward your fisheries data in one place</h1>
+          <h1 className="display">Manage your fisheries data in one place</h1>
           <p className="text-muted">
             Welcome aboard! Create an account to join your organisation and start managing vessels, trips, and ingestion
             workflows, or jump back in if you already have an account.

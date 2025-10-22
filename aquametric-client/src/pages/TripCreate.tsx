@@ -370,7 +370,7 @@ export default function TripCreate() {
           </div>
         </form>
 
-        <details className="surface surface--muted">
+        {/* <details className="surface surface--muted">
           <summary>Show UTC payload preview</summary>
           <pre>
             {JSON.stringify(
@@ -399,7 +399,7 @@ export default function TripCreate() {
               2
             )}
           </pre>
-        </details>
+        </details> */}
       </div>
     </section>
   );
