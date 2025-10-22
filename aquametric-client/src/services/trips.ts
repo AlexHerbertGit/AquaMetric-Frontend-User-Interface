@@ -9,6 +9,13 @@ export type TripCreatePayload = {
   averageSpeedKmh: number;
   daysAtSea: number;
   totalDistanceKm: number;
+  masterOrFisherName: string;
+  isVesselUsed: boolean;
+  startLatitude?: number;
+  startLongitude?: number;
+  endLatitude?: number;
+  endLongitude?: number;
+  notes?: string;
 };
 
 export type TripReadDto = {
@@ -86,7 +93,25 @@ export async function createTrip(payload: TripCreatePayload) {
     averageSpeedKmh: Number(payload.averageSpeedKmh ?? 0),
     daysAtSea: Number(payload.daysAtSea ?? 0),
     totalDistanceKm: Number(payload.totalDistanceKm ?? 0),
+    masterOrFisherName: payload.masterOrFisherName,
+    isVesselUsed: Boolean(payload.isVesselUsed),
   };
+
+  if (payload.startLatitude !== undefined) {
+    body.startLatitude = Number(payload.startLatitude);
+  }
+  if (payload.startLongitude !== undefined) {
+    body.startLongitude = Number(payload.startLongitude);
+  }
+  if (payload.endLatitude !== undefined) {
+    body.endLatitude = Number(payload.endLatitude);
+  }
+  if (payload.endLongitude !== undefined) {
+    body.endLongitude = Number(payload.endLongitude);
+  }
+  if (payload.notes !== undefined) {
+    body.notes = payload.notes;
+  }
   return api.post("/api/fishingtrips", body);
 }
 

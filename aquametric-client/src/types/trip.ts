@@ -6,6 +6,12 @@ export interface FishingTripCreateDto {
   returnDateTimeUtc: string;        // ISO UTC
   totalDistanceKm: number;          // > 0
   daysAtSea: number;                // >= 1
+  masterOrFisherName: string;
+  isVesselUsed: boolean;
+  startLatitude?: number;
+  startLongitude?: number;
+  endLatitude?: number;
+  endLongitude?: number;                
 }
 
 export interface FishingTripReadDto extends FishingTripCreateDto {

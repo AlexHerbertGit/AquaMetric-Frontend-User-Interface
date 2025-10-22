@@ -15,9 +15,11 @@ export default function TopNav() {
         <nav className="top-nav__menu">
           {user ? (
             <>
+              <Link className="top-nav__link" to="/home">Home</Link>
               <Link className="top-nav__link" to="/dashboard">Dashboard</Link>
               <Link className="top-nav__link" to="/vessels/new">New Vessel</Link>
               <Link className="top-nav__link" to="/trips/new">Create Trip</Link>
+              <Link className="top-nav__link" to="/csvingestion/new">Upload CSV</Link>
               <span className="top-nav__user">
                 {user.email}{user.organizationId ? ` · Org #${user.organizationId}` : ""}
               </span>
