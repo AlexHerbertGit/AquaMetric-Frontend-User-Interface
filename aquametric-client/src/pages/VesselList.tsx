@@ -25,40 +25,47 @@ export default function VesselList() {
   }, [orgId]);
 
   return (
-    <div className="container">
-      <h2 className="title">Vessels</h2>
-      {err && <div className="error">{err}</div>}
-      <div className="card">
-        <div className="table-wrap">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Registration #</th>
-                <th>Owner</th>
-                <th>Home Port</th>
-                <th>Max Capacity (kg)</th>
-                <th>Gear Types Used</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map(v => (
-                <tr key={v.fishingVesselId}>
-                  <td>{v.fishingVesselName}</td>
-                  <td>{v.fishingVesselRegistrationNumber}</td>
-                  <td>{v.ownerName ?? "-"}</td>
-                  <td>{v.homePort ?? "-"}</td>
-                  <td>{v.maxCapacityKg ?? "-"}</td>
-                  <td>{v.gearTypesUsed ?? "-"}</td>
+    <section className="page">
+      <div className="stack-lg">
+        <header className="page-header">
+          <h2 className="page-title">Registered vessels</h2>
+          <p className="page-subtitle">All vessels connected to your organisation are listed below.</p>
+        </header>
+        {err && <div className="alert alert--error">{err}</div>}
+        <div className="surface surface--tight">
+          <div className="table-container">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Registration #</th>
+                  <th>Owner</th>
+                  <th>Home port</th>
+                  <th>Max capacity (kg)</th>
+                  <th>Gear types</th>
                 </tr>
-              ))}
-              {!rows.length && (
-                <tr><td colSpan={6}>No vessels found.</td></tr>
-              )}
-            </tbody>
-          </table>
+               </thead>
+              <tbody>
+                {rows.map(v => (
+                  <tr key={v.fishingVesselId}>
+                    <td>{v.fishingVesselName}</td>
+                    <td>{v.fishingVesselRegistrationNumber}</td>
+                    <td>{v.ownerName ?? "—"}</td>
+                    <td>{v.homePort ?? "—"}</td>
+                    <td>{v.maxCapacityKg ?? "—"}</td>
+                    <td>{v.gearTypesUsed ?? "—"}</td>
+                  </tr>
+                ))}
+                {!rows.length && (
+                  <tr>
+                    <td colSpan={6} className="table-empty">No vessels found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

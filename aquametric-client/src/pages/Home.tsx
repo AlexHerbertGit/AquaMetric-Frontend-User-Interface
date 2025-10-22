@@ -1,26 +1,36 @@
 import { Link } from "react-router-dom";
+import aquametricLogo from "../assets/aquamteric-logo.png"
 
 export default function Landing() {
   return (
-    <div className="center">
-      <div className="container stack-md">
-        <h1 className="title">AquaMetric</h1>
-        <p className="muted">Welcome! Create an account to get started, or log in if you already have one.</p>
+    <section className="page page--narrow page--center">
+      <div className="stack-lg-2">
+        <img className="brand-logo" src= {aquametricLogo}></img>
+      </div>
+      <div className="stack-lg">
+        <div className="stack-sm text-center">
+          <h1 className="display">Steward your fisheries data in one place</h1>
+          <p className="text-muted">
+            Welcome aboard! Create an account to join your organisation and start managing vessels, trips, and ingestion
+            workflows, or jump back in if you already have an account.
+          </p>
+        </div>
 
-        <div className="card-grid">
-          <div className="card">
-            <h3>New here?</h3>
-            <p>Register and join an Organization to get started.</p>
-            <Link to="/register" className="btn">Register</Link>
-          </div>
+        <div className="tile-grid">
+          <article className="surface surface--interactive stack-sm">
+            <h3>New to AquaMetric?</h3>
+            <p className="text-muted">Create an account, join or create an organisation, and invite your crew.</p>
+            <Link to="/register" className="button button--primary">Create account</Link>
+          </article>
 
-          <div className="card">
-            <h3>Returning?</h3>
-            <p>Log in to continue.</p>
-            <Link to="/login" className="btn">Log In</Link>
-          </div>
+          <article className="surface surface--interactive stack-sm">
+            <h3>Already on board?</h3>
+            <p className="text-muted">Log in to continue where you left off with your latest trips and uploads.</p>
+            <Link to="/login" className="button button--ghost">Log in</Link>
+          </article>
+
         </div>
       </div>
-    </div>
+    </section>
   );
 }

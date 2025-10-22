@@ -24,16 +24,47 @@ export default function Login() {
   }
 
   return (
-    <div className="container">
-      <h2 className="title">Log in</h2>
-      <form onSubmit={submit} className="form">
-        <input type="email" placeholder="Email" value={form.email}
-               onChange={e => setForm({ ...form, email: e.target.value })} required />
-        <input type="password" placeholder="Password" value={form.password}
-               onChange={e => setForm({ ...form, password: e.target.value })} required />
-        <button className="btn" disabled={busy}>{busy ? "Logging in..." : "Log In"}</button>
-        {error && <div className="error">{error}</div>}
-      </form>
-    </div>
+    <section className="page page--narrow">
+      <div className="stack-lg">
+        <header className="page-header">
+          <h2 className="page-title">Log in</h2>
+          <p className="page-subtitle">Access your dashboard to manage vessels, trips, and ingestion workflows.</p>
+        </header>
+
+        {error && <div className="alert alert--error">{error}</div>}
+
+        <form onSubmit={submit} className="surface surface--tight form">
+          <label className="field">
+            <span className="field__label">Email</span>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={form.email}
+              onChange={e => setForm({ ...form, email: e.target.value })}
+              autoComplete="email"
+              required
+            />
+          </label>
+
+          <label className="field">
+            <span className="field__label">Password</span>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={form.password}
+              onChange={e => setForm({ ...form, password: e.target.value })}
+              autoComplete="current-password"
+              required
+            />
+          </label>
+
+          <div className="form-actions">
+            <button className="button button--primary" disabled={busy}>
+              {busy ? "Logging in…" : "Log in"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
   );
 }

@@ -28,39 +28,49 @@ export default function Dashboard() {
   useEffect(() => { void fetchVessels(); }, [user?.organizationId]);
 
   return (
-    <div className="container stack-md">
-      <h2 className="title">Welcome to AquaMetric</h2>
-      <p>Next steps:</p>
+    <section className="page">
+      <div className="stack-lg">
+        <header className="page-header">
+          <h2 className="page-title">Welcome to AquaMetric</h2>
+          <p className="page-subtitle">Stay in sync with your fleet — follow the quick start checklist below.</p>
+        </header>
 
-      <div className="card-grid">
-        <div className="card">
-          <h3>1) Register a Vessel</h3>
-          <p>Link a fishing vessel to your organization.</p>
-          <Link to="/vessels/new" className="btn">Register Vessel</Link>
-        </div>
-        <div className="card">
-          <h3>2) Create a Trip</h3>
-          <p>Choose a vessel and set your departure/return.</p>
-          <Link to="/trips/new" className="btn">Create Trip</Link>
-        </div>
-        <div className="card">
-          <h3>3) Upload CSV</h3>
-          <p>Ingest MPI e-log data for your trip.</p>
-          <Link to="/ingestion" className="btn">Upload CSV</Link>
+      <div className="tile-grid">
+          <article className="surface surface--interactive stack-sm">
+            <span className="badge">Step 1</span>
+            <h3>Register a vessel</h3>
+            <p className="text-muted">Link a fishing vessel to your organisation to unlock trip logging.</p>
+            <Link to="/vessels/new" className="button button--primary">Register vessel</Link>
+          </article>
+
+          <article className="surface surface--interactive stack-sm">
+            <span className="badge">Step 2</span>
+            <h3>Create a trip</h3>
+            <p className="text-muted">Choose a vessel and set departure and return details for your next voyage.</p>
+            <Link to="/trips/new" className="button button--primary">Create trip</Link>
+          </article>
+
+          <article className="surface surface--interactive stack-sm">
+            <span className="badge">Step 3</span>
+            <h3>Upload CSV data</h3>
+            <p className="text-muted">Ingest MPI e-log data to populate catches, species, and trip metadata.</p>
+            <Link to="/ingestion" className="button button--primary">Upload CSV</Link>
+          </article>
         </div>
       </div>
 
       <div className="stack-md">
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <h3 className="title" style={{ margin: 0 }}>Your Vessels</h3>
-          <button className="btn" onClick={fetchVessels} disabled={loading}>Refresh</button>
+          <div className="cluster cluster--spread">
+            <h3>Your vessels</h3>
+            <button className="button button--ghost button--sm" onClick={fetchVessels} disabled={loading}>
+              Refresh
+            </button>
+          </div>
+          {err && <div className="alert alert--error">{err}</div>}
+          {loading ? <div className="surface surface--muted">Loading vessels…</div> : <VesselTable rows={rows} />}
         </div>
-        {err && <div className="error">{err}</div>}
-        {loading ? <div className="card">Loading vessels…</div> : <VesselTable rows={rows} />}
-      </div>
-      <div className="card">
+        
         <TripsTable />
-      </div>
-    </div>
+    </section>
   );
 }

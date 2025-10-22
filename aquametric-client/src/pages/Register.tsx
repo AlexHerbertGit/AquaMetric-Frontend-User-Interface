@@ -58,57 +58,142 @@ export default function Register() {
   }
 
   return (
-    <div className="container">
-      <h2 className="title">Create your account</h2>
+    <section className="page page--narrow">
+      <div className="stack-lg">
+        <header className="page-header">
+          <h2 className="page-title">Create your account</h2>
+          <p className="page-subtitle">Join an existing organisation or create a new one for your crew.</p>
+        </header>
 
       <div className="segmented">
-        <button type="button" className={`segmented__btn ${mode === "join" ? "is-active" : ""}`} onClick={() => setMode("join")}>Join existing org</button>
-        <button type="button" className={`segmented__btn ${mode === "create" ? "is-active" : ""}`} onClick={() => setMode("create")}>Create new org</button>
-      </div>
-
-      <form onSubmit={handleSubmit} className="form">
-        {mode === "join" ? (
-          <label className="form-group">
-            <span>Organization</span>
-            <select
-              value={organizationId ?? ""}
-              onChange={(e) => setOrganizationId(Number(e.target.value) || null)}
-              required
-            >
-              <option value="">Select organization…</option>
-              {orgs.map(o => (
-                <option key={o.organizationId} value={o.organizationId}>{o.organizationName}</option>
-              ))}
-            </select>
-          </label>
-        ) : (
-          <div className="card">
-            <div className="grid">
-              <input placeholder="Organization name" value={orgCreate.organizationName}
-                     onChange={e => setOrgCreate({ ...orgCreate, organizationName: e.target.value })} required />
-              <input placeholder="Industry type" value={orgCreate.industryType}
-                     onChange={e => setOrgCreate({ ...orgCreate, industryType: e.target.value })} />
-              <input placeholder="Org email (optional)" value={orgCreate.email}
-                     onChange={e => setOrgCreate({ ...orgCreate, email: e.target.value })} />
-              <input placeholder="Phone (optional)" value={orgCreate.phoneNumber}
-                     onChange={e => setOrgCreate({ ...orgCreate, phoneNumber: e.target.value })} />
-              <input placeholder="Address (optional)" value={orgCreate.address}
-                     onChange={e => setOrgCreate({ ...orgCreate, address: e.target.value })} />
-            </div>
-          </div>
-        )}
-
-        <div className="grid">
-          <input placeholder="First name" value={form.firstName} onChange={e => setForm({ ...form, firstName: e.target.value })} />
-          <input placeholder="Last name" value={form.lastName} onChange={e => setForm({ ...form, lastName: e.target.value })} />
-          <input type="email" placeholder="Email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
-          <input type="password" placeholder="Password" value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
-          <input type="password" placeholder="Confirm password" value={form.confirm} onChange={e => setForm({ ...form, confirm: e.target.value })} required />
+          <button
+            type="button"
+            className={`segmented__option ${mode === "join" ? "is-active" : ""}`}
+            onClick={() => setMode("join")}
+          >
+            Join existing org
+          </button>
+          <button
+            type="button"
+            className={`segmented__option ${mode === "create" ? "is-active" : ""}`}
+            onClick={() => setMode("create")}
+          >
+            Create new org
+          </button>
         </div>
 
-        <button className="btn" disabled={busy}>{busy ? "Creating account..." : "Register"}</button>
-        {error && <div className="error">{error}</div>}
-      </form>
-    </div>
+      {error && <div className="alert alert--error">{error}</div>}
+
+        <form onSubmit={handleSubmit} className="surface surface--tight form">
+          {mode === "join" ? (
+            <label className="field">
+              <span className="field__label">Organisation</span>
+              <select
+                value={organizationId ?? ""}
+                onChange={(e) => setOrganizationId(Number(e.target.value) || null)}
+                required
+              >
+                <option value="">Select organisation…</option>
+                {orgs.map(o => (
+                  <option key={o.organizationId} value={o.organizationId}>{o.organizationName}</option>
+                ))}
+              </select>
+            </label>
+          ) : (
+            <div className="surface surface--muted surface--tight form-grid">
+              <label className="field">
+                <span className="field__label">Organisation name</span>
+                <input
+                  placeholder="e.g. Sea Harvest Co."
+                  value={orgCreate.organizationName}
+                  onChange={e => setOrgCreate({ ...orgCreate, organizationName: e.target.value })}
+                  required
+                />
+              </label>
+              <label className="field">
+                <span className="field__label">Industry type</span>
+                <input
+                  placeholder="Fishing"
+                  value={orgCreate.industryType}
+                  onChange={e => setOrgCreate({ ...orgCreate, industryType: e.target.value })}
+                />
+              </label>
+              <label className="field">
+                <span className="field__label">Organisation email</span>
+                <input
+                  type="email"
+                  placeholder="team@organisation.nz"
+                  value={orgCreate.email}
+                  onChange={e => setOrgCreate({ ...orgCreate, email: e.target.value })}
+                />
+              </label>
+              <label className="field">
+                <span className="field__label">Phone</span>
+                <input
+                  placeholder="Optional"
+                  value={orgCreate.phoneNumber}
+                  onChange={e => setOrgCreate({ ...orgCreate, phoneNumber: e.target.value })}
+                />
+              </label>
+              <label className="field">
+                <span className="field__label">Address</span>
+                <input
+                  placeholder="Optional"
+                  value={orgCreate.address}
+                  onChange={e => setOrgCreate({ ...orgCreate, address: e.target.value })}
+                />
+              </label>
+            </div>
+          )}
+
+        <div className="form-grid form-grid--two">
+            <label className="field">
+              <span className="field__label">First name</span>
+              <input value={form.firstName} onChange={e => setForm({ ...form, firstName: e.target.value })} />
+            </label>
+            <label className="field">
+              <span className="field__label">Last name</span>
+              <input value={form.lastName} onChange={e => setForm({ ...form, lastName: e.target.value })} />
+            </label>
+            <label className="field">
+              <span className="field__label">Email</span>
+              <input
+                type="email"
+                value={form.email}
+                onChange={e => setForm({ ...form, email: e.target.value })}
+                autoComplete="email"
+                required
+              />
+            </label>
+            <label className="field">
+              <span className="field__label">Password</span>
+              <input
+                type="password"
+                value={form.password}
+                onChange={e => setForm({ ...form, password: e.target.value })}
+                autoComplete="new-password"
+                required
+              />
+            </label>
+            <label className="field">
+              <span className="field__label">Confirm password</span>
+              <input
+                type="password"
+                value={form.confirm}
+                onChange={e => setForm({ ...form, confirm: e.target.value })}
+                autoComplete="new-password"
+                required
+              />
+            </label>
+          </div>
+
+        <div className="form-actions">
+            <button className="button button--primary" disabled={busy}>
+              {busy ? "Creating account…" : "Create account"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
   );
 }

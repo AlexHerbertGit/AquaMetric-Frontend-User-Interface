@@ -67,33 +67,68 @@ export default function VesselCreate() {
   }
 
   return (
-    <div className="container">
-      <h2 className="title">Register a Fishing Vessel</h2>
-      <form className="form" onSubmit={submit}>
-        <div className="grid">
-          <input
-            placeholder="Vessel name *"
-            value={form.fishingVesselName}
-            onChange={update("fishingVesselName")}
-            required
-          />
-          <input
-            placeholder="Registration number *"
-            value={form.fishingVesselRegistrationNumber}
-            onChange={update("fishingVesselRegistrationNumber")}
-            required
-          />
-          <input placeholder="Owner name" value={form.ownerName} onChange={update("ownerName")} />
-          <input placeholder="Home port" value={form.homePort} onChange={update("homePort")} />
-          <input placeholder="Vessel type" value={form.vesselType} onChange={update("vesselType")} />
-          <input placeholder="Max capacity (kg)" value={form.maxCapacityKg} onChange={update("maxCapacityKg")} />
-          <input placeholder="Gear types used" value={form.gearTypesUsed} onChange={update("gearTypesUsed")} />
-        </div>
+    <section className="page page--narrow">
+      <div className="stack-lg">
+        <header className="page-header">
+          <h2 className="page-title">Register a fishing vessel</h2>
+          <p className="page-subtitle">Capture the key attributes of a vessel to connect it with your organisation.</p>
+        </header>
 
-        <button className="btn" disabled={busy}>{busy ? "Saving..." : "Create Vessel"}</button>
-        {error && <div className="error">{error}</div>}
-        {success && <div className="card">{success}</div>}
-      </form>
-    </div>
+        {error && <div className="alert alert--error">{error}</div>}
+        {success && <div className="alert alert--success">{success}</div>}
+
+        <form className="surface surface--tight form" onSubmit={submit}>
+          <div className="form-grid form-grid--two">
+            <label className="field">
+              <span className="field__label">Vessel name *</span>
+              <input
+                placeholder="e.g. FV Moana"
+                value={form.fishingVesselName}
+                onChange={update("fishingVesselName")}
+                required
+              />
+            </label>
+            <label className="field">
+              <span className="field__label">Registration number *</span>
+              <input
+                placeholder="NZ-12345"
+                value={form.fishingVesselRegistrationNumber}
+                onChange={update("fishingVesselRegistrationNumber")}
+                required
+              />
+            </label>
+            <label className="field">
+              <span className="field__label">Owner name</span>
+              <input placeholder="Optional" value={form.ownerName} onChange={update("ownerName")} />
+            </label>
+            <label className="field">
+              <span className="field__label">Home port</span>
+              <input placeholder="Optional" value={form.homePort} onChange={update("homePort")} />
+            </label>
+            <label className="field">
+              <span className="field__label">Vessel type</span>
+              <input placeholder="Optional" value={form.vesselType} onChange={update("vesselType")} />
+            </label>
+            <label className="field">
+              <span className="field__label">Max capacity (kg)</span>
+              <input placeholder="Optional" value={form.maxCapacityKg} onChange={update("maxCapacityKg")} />
+            </label>
+            <label className="field" style={{ gridColumn: "1 / -1" }}>
+              <span className="field__label">Gear types used</span>
+              <input placeholder="Optional" value={form.gearTypesUsed} onChange={update("gearTypesUsed")} />
+            </label>
+          </div>
+
+          <div className="form-actions">
+            <button className="button button--primary" disabled={busy}>
+              {busy ? "Saving…" : "Create vessel"}
+            </button>
+            <button className="button button--ghost" type="button" onClick={() => nav(-1)} disabled={busy}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
   );
 }

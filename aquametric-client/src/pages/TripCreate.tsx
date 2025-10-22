@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { createTrip } from "../services/trips";
 import { listVesselsByOrg } from "../services/vessels";
-import { useNavigate } from "react-router-dom";
-import "../App.css";
+import { Link, useNavigate } from "react-router-dom";
+
 
 type VesselReadDto = {
   fishingVesselId: number;
@@ -159,20 +159,23 @@ export default function TripCreate() {
   }
 
   return (
-    <div className="trip-create">
-      <div className="tc-container">
-        <h1>Create Fishing Trip</h1>
+    <section className="page page--narrow">
+      <div className="stack-lg">
+        <header className="page-header">
+          <h1 className="page-title">Create fishing trip</h1>
+          <p className="page-subtitle">Define the vessel, timing, and distance to log a new voyage.</p>
+        </header>
 
-        {error && <div className="tc-alert">{error}</div>}
+        {error && <div className="alert alert--error">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="tc-card">
-          {/* Vessel */}
-          <div className="tc-field">
-            <label>Fishing Vessel</label>
+        <form onSubmit={handleSubmit} className="surface surface--tight form">
+          <div className="field">
+            <span className="field__label">Fishing vessel</span>
             <select
               value={fishingVesselId}
               onChange={(e) => setFishingVesselId(Number(e.target.value))}
               disabled={loadingVessels}
+              required
             >
               <option value={0}>
                 {loadingVessels ? "Loading vessels…" : "Select a vessel…"}
@@ -183,74 +186,68 @@ export default function TripCreate() {
                 </option>
               ))}
             </select>
-
-            {!loadingVessels && vessels.length === 0 && (
-              <div>
-                No vessels found for your organization.{" "}
-                <a href="/vessels/create" className="tc-muted-link">
-                  Create one
-                </a>{" "}
-                and come back here.
-              </div>
-            )}
+            <span className="field__hint">
+                No vessels found for your organisation. <Link to="/vessels/new">Create one</Link> and return here.
+            </span>
+            
           </div>
 
-          {/* Departure / Return */}
-          <div className="tc-grid tc-grid--2">
-            <div className="tc-field">
-              <label>Departure (local)</label>
+           <div className="form-grid form-grid--two">
+            <label className="field">
+              <span className="field__label">Departure (local)</span>
               <input
                 type="datetime-local"
                 value={departureLocal}
                 onChange={(e) => setDepartureLocal(e.target.value)}
+                required
               />
-            </div>
+            </label>
 
-            <div className="tc-field">
-              <label>Return (local)</label>
+            <label className="field">
+              <span className="field__label">Return (local)</span>
               <input
                 type="datetime-local"
                 value={returnLocal}
                 onChange={(e) => setReturnLocal(e.target.value)}
               />
-            </div>
+            </label>
           </div>
 
-          {/* Calculated + Distance */}
-          <div className="tc-helper">
-            <div className="tc-field">
-              <label>Days at Sea (auto)</label>
+          <div className="form-grid form-grid--two">
+            <label className="field">
+              <span className="field__label">Days at sea (auto)</span>
               <input type="number" value={daysAtSea} readOnly />
-            </div>
+            </label>
 
-            <div className="tc-field">
-              <label>Total Distance (km)</label>
+            <label className="field">
+              <span className="field__label">Total distance (km)</span>
               <input
                 type="number"
                 min={0}
                 step={0.1}
                 value={totalDistanceKm}
                 onChange={(e) => setTotalDistanceKm(Number(e.target.value))}
-                placeholder="e.g., 123.4"
+                placeholder="e.g. 123.4"
+                required
               />
-            </div>
+            </label>
           </div>
 
-          {/* Notes */}
-          <div className="tc-field">
-            <label>Notes (optional)</label>
+          <label className="field">
+            <span className="field__label">Notes</span>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
-              placeholder="Any details you want to record about this trip…"
+              placeholder="Optional trip context, crew details, weather notes…"
             />
-          </div>
+          <span className="field__hint">Optional</span>
+          </label>
 
-          <div className="tc-actions">
+          <div className="form-actions">
             <button
               type="submit"
-              className="btn btn-primary"
+               className="button button--primary"
               disabled={
                 submitBusy ||
                 !fishingVesselId ||
@@ -259,12 +256,12 @@ export default function TripCreate() {
                 totalDistanceKm <= 0
               }
             >
-              {submitBusy ? "Creating…" : "Create Trip"}
+              {submitBusy ? "Creating…" : "Create trip"}
             </button>
 
             <button
               type="button"
-              className="btn"
+              className="button button--ghost"
               onClick={() => navigate(-1)}
             >
               Cancel
@@ -272,8 +269,7 @@ export default function TripCreate() {
           </div>
         </form>
 
-        {/* Debug helper */}
-        <details className="tc-card">
+        <details className="surface surface--muted">
           <summary>Show UTC payload preview</summary>
           <pre>
             {JSON.stringify(
@@ -298,6 +294,6 @@ export default function TripCreate() {
           </pre>
         </details>
       </div>
-    </div>
+    </section>
   );
 }

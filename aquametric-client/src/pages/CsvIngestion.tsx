@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { listTripsByUser, type TripReadDto } from "../services/trips";
 import { ingestTripCsv } from "../services/ingestion";
-import "../App.css"; 
+ 
 
 export default function CsvIngestion() {
   const navigate = useNavigate();
@@ -71,16 +71,19 @@ export default function CsvIngestion() {
   }
 
   return (
-    <div className="trip-create">
-      <div className="tc-container">
-        <h1>CSV Ingestion</h1>
+    <section className="page page--narrow">
+      <div className="stack-lg">
+        <header className="page-header">
+          <h1 className="page-title">CSV ingestion</h1>
+          <p className="page-subtitle">Upload an MPI e-log CSV to populate catches, species, and metadata for a trip.</p>
+        </header>
 
-        {error && <div className="tc-alert">{error}</div>}
+        {error && <div className="alert alert--error">{error}</div>}
 
-        <form className="tc-card" onSubmit={handleSubmit}>
-          <div className="tc-field">
-            <label>Fishing Trip</label>
-            <select value={tripId || 0} onChange={(e) => setTripId(Number(e.target.value))}>
+        <form className="surface surface--tight form" onSubmit={handleSubmit}>
+          <label className="field">
+            <span className="field__label">Fishing trip</span>
+            <select value={tripId || 0} onChange={(e) => setTripId(Number(e.target.value))} required>
               <option value={0}>Select a trip…</option>
               {trips.map(t => (
                 <option key={t.fishingTripId} value={t.fishingTripId}>
@@ -90,41 +93,41 @@ export default function CsvIngestion() {
                 </option>
               ))}
             </select>
-          </div>
+          </label>
 
-          <div className="tc-field">
-            <label>CSV file</label>
+          <label className="field">
+            <span className="field__label">CSV file</span>
             <input type="file" accept=".csv,text/csv" onChange={onPickFile} />
             {file && (
-              <div className="text-sm text-gray-500">
+              <span className="field__hint">
                 Selected: <strong>{file.name}</strong> ({Math.ceil(file.size / 1024)} KB)
-              </div>
+              </span>
             )}
-            <small className="text-gray-500">
+             <span className="field__hint">
               Expected headers: <code>FishingTrip.*</code>, <code>Catch.*</code>, <code>CatchSpecies.*</code>, <code>CatchMetaData.*</code>
-            </small>
-          </div>
+            </span>
+          </label>
 
-          <div className="tc-actions">
-            <button className="btn btn-primary" type="submit" disabled={busy || !tripId || !file}>
+          <div className="form-actions">
+            <button className="button button--primary" type="submit" disabled={busy || !tripId || !file}>
               {busy ? "Uploading…" : "Submit"}
             </button>
-            <button className="btn" type="button" onClick={() => navigate(-1)} disabled={busy}>
+            <button className="button button--ghost" type="button" onClick={() => navigate(-1)} disabled={busy}>
               Cancel
             </button>
           </div>
         </form>
 
         {success && (
-          <div className="tc-card" style={{ marginTop: 16 }}>
+          <div className="alert alert--success">
             Ingestion complete ✅ — Trip #{success.fishingTripId}, Catch #{success.catchId}.
-            <div className="tc-actions" style={{ marginTop: 8 }}>
-              <button className="btn" onClick={() => navigate("/dashboard")}>Back to Dashboard</button>
-              <button className="btn" onClick={() => setSuccess(null)}>Upload another</button>
+            <div className="form-actions" style={{ marginTop: "var(--space-3)" }}>
+              <button className="button button--ghost" onClick={() => navigate("/dashboard")}>Back to dashboard</button>
+              <button className="button button--primary" onClick={() => setSuccess(null)}>Upload another</button>
             </div>
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 }

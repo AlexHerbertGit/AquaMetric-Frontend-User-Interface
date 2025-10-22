@@ -107,35 +107,36 @@ export default function TripsTable() {
   const hasData = trips.length > 0;
 
   return (
-    <div className="tc-card">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-semibold">Your Trips</h2>
-        {loading && <span className="text-sm text-gray-500">Loading…</span>}
+    <section className="surface surface--tight stack-md">
+      <div className="cluster cluster--spread">
+        <div className="stack-xs">
+          <h3>Recent trips</h3>
+          <p className="text-muted text-small">Expand a trip to explore catches, species, and metadata.</p>
+        </div>
+        {loading && <span className="text-subtle text-small">Loading…</span>}
       </div>
 
-      {error && <div className="tc-alert">{error}</div>}
+      {error && <div className="alert alert--error">{error}</div>}
 
       {!loading && !hasData && (
-        <div className="text-sm text-gray-600">
-          No trips yet. Create one from the “Create Fishing Trip” page.
-        </div>
+        <div className="text-muted">No trips yet. Create one from the “Create Fishing Trip” page.</div>
       )}
 
       {hasData && (
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
+        <div className="table-container">
+          <table className="data-table data-table--dense">
             <thead>
-              <tr className="text-left text-gray-500">
-                <th className="py-2 pr-3">Vessel</th>
-                <th className="py-2 pr-3">Client #</th>
-                <th className="py-2 pr-3">Departure</th>
-                <th className="py-2 pr-3">Return</th>
-                <th className="py-2 pr-3">Days</th>
-                <th className="py-2 pr-3">Distance (km)</th>
-                <th className="py-2 pr-3">Avg Speed (km/h)</th>
-                <th className="py-2 pr-3">Landing</th>
-                <th className="py-2 pr-3">Coords</th>
-                <th className="py-2 pr-3"></th>
+              <tr>
+                <th>Vessel</th>
+                <th>Client #</th>
+                <th>Departure</th>
+                <th>Return</th>
+                <th>Days</th>
+                <th>Distance (km)</th>
+                <th>Avg speed (km/h)</th>
+                <th>Landing</th>
+                <th>Coords</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -163,7 +164,7 @@ export default function TripsTable() {
           </table>
         </div>
       )}
-    </div>
+    </section>
   );
 }
 
@@ -188,30 +189,30 @@ function FragmentRow({
 }) {
   return (
     <>
-      <tr className="border-t border-gray-200">
-        <td className="py-2 pr-3">{trip.fishingVesselName ?? `Vessel #${trip.fishingVesselId}`}</td>
-        <td className="py-2 pr-3">{trip.clientNumber ?? "—"}</td>
-        <td className="py-2 pr-3">{fmtDate(trip.departureDateTime)}</td>
-        <td className="py-2 pr-3">{fmtDate(trip.returnDateTime)}</td>
-        <td className="py-2 pr-3">{fmtNum(trip.daysAtSea, 0)}</td>
-        <td className="py-2 pr-3">{fmtNum(trip.totalDistanceKm)}</td>
-        <td className="py-2 pr-3">{fmtNum(trip.averageSpeedKmh)}</td>
-        <td className="py-2 pr-3">
+      <tr>
+        <td>{trip.fishingVesselName ?? `Vessel #${trip.fishingVesselId}`}</td>
+        <td>{trip.clientNumber ?? "—"}</td>
+        <td>{fmtDate(trip.departureDateTime)}</td>
+        <td>{fmtDate(trip.returnDateTime)}</td>
+        <td>{fmtNum(trip.daysAtSea, 0)}</td>
+        <td>{fmtNum(trip.totalDistanceKm)}</td>
+        <td>{fmtNum(trip.averageSpeedKmh)}</td>
+        <td>
           {trip.landingPortCode ?? "—"} {trip.landingCode ? `(${trip.landingCode})` : ""}
         </td>
-        <td className="py-2 pr-3">{coords}</td>
-        <td className="py-2 pr-0">
-          <button className="btn" onClick={onToggle}>
+        <td className="text-mono text-small">{coords}</td>
+        <td style={{ textAlign: "right" }}>
+          <button className="button button--ghost button--sm" onClick={onToggle}>
             {expanded ? "Hide" : "Details"}
           </button>
         </td>
       </tr>
 
       {expanded && (
-        <tr className="border-t border-gray-100">
-          <td colSpan={10} className="py-3">
+        <tr>
+          <td colSpan={10}>
             {loadingDetails ? (
-              <div className="text-sm text-gray-500">Loading details…</div>
+              <div className="text-muted text-small">Loading details…</div>
             ) : (
               <TripDetails
                 trip={trip}
@@ -239,85 +240,86 @@ function TripDetails({
   speciesByCatch: Record<number, CatchSpeciesReadDto[]>;
 }) {
   return (
-    <div className="grid gap-3 md:grid-cols-3">
-      <div className="tc-card">
-        <div className="text-xs text-gray-500 mb-1">Master / Fisher</div>
-        <div className="font-medium">{trip.masterOrFisherName ?? "—"}</div>
-        <div className="text-xs text-gray-500 mt-3">Vessel Used</div>
+    <div className="details-grid">
+      <section className="surface surface--muted surface--tight stack-sm">
+        <span className="field__label">Master / Fisher</span>
+        <div>{trip.masterOrFisherName ?? "—"}</div>
+        <span className="field__label">Vessel used</span>
         <div>{trip.isVesselUsed ? "Yes" : "No"}</div>
-        <div className="text-xs text-gray-500 mt-3">Notes</div>
-        <div className="whitespace-pre-wrap">{trip.notes ?? "—"}</div>
-      </div>
+        <span className="field__label">Notes</span>
+        <div className="text-muted" style={{ whiteSpace: "pre-wrap" }}>{trip.notes ?? "—"}</div>
+      </section>
 
-      <div className="tc-card">
-        <div className="text-xs text-gray-500 mb-1">Trip Coordinates</div>
-        <div className="font-mono text-xs">
+      <section className="surface surface--muted surface--tight stack-sm">
+        <span className="field__label">Trip coordinates</span>
+        <div className="mono-block">
           Start: {fmtNum(trip.startLatitude, 5)}, {fmtNum(trip.startLongitude, 5)}
-        </div>
-        <div className="font-mono text-xs">
+        <br />
           End: {fmtNum(trip.endLatitude, 5)}, {fmtNum(trip.endLongitude, 5)}
         </div>
-      </div>
+      </section>
 
-      <div className="tc-card">
-        <div className="text-xs text-gray-500 mb-1">Catches</div>
+      <section className="surface surface--muted surface--tight stack-sm">
+        <span className="field__label">Catches</span>
         {catches.length === 0 ? (
-          <div className="text-sm text-gray-600">No catches (yet).</div>
+          <div className="text-muted text-small">No catches recorded.</div>
         ) : (
-          <ul className="text-sm space-y-4">
+          <ul className="list-stack">
             {catches.map((c) => {
-              const md = metaByCatch[c.catchId]?.[0]; // one metadata row per catch
+              const md = metaByCatch[c.catchId]?.[0];
               const sp = speciesByCatch[c.catchId] ?? [];
               return (
-                <li key={c.catchId} className="border-b border-gray-200 pb-3">
-                  <div className="font-medium">
-                    Catch #{c.catchId} — {c.targetSpeciesCode ?? "—"} ({c.fishingMethodCode ?? "—"})
+                <li key={c.catchId} className="stack-sm">
+                  <div className="cluster cluster--spread">
+                    <div className="text-small text-muted">Catch #{c.catchId}</div>
+                    <div className="badge">{c.fishingMethodCode ?? "—"}</div>
                   </div>
-                  <div className="text-xs mb-2">
+                  <div className="text-small text-muted">
                     {fmtDate(c.startDateTime)} → {fmtDate(c.finishDateTime)} · Weight: {fmtNum(c.totalWeightKg, 1)} kg
                     {c.nfpsPresent ? " · NFPS present" : ""}
                   </div>
+                  <div className="text-small">Target species: {c.targetSpeciesCode ?? "—"}</div>
 
-                  {/* Metadata summary */}
+                  
                   {!md ? (
-                    <div className="text-xs text-gray-600">No metadata.</div>
+                    <div className="text-small text-muted">No metadata captured.</div>
                   ) : (
-                    <div className="text-xs grid" style={{ gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-                      <span className="text-gray-500">Water Temp (°C)</span><span>{fmtNum(md.waterTempC)}</span>
-                      <span className="text-gray-500">Catch Depth (m)</span><span>{fmtNum(md.catchDepthM)}</span>
-                      <span className="text-gray-500">Visibility (m)</span><span>{fmtNum(md.visibilityM)}</span>
-                      <span className="text-gray-500">Bottom Depth (m)</span><span>{fmtNum(md.bottomDepthMetres)}</span>
-                      <span className="text-gray-500">Chl-a (µg/L)</span><span>{fmtNum(md.chlorophyllAUgL, 3)}</span>
-                      <span className="text-gray-500">Phyto Cells (/L)</span><span>{fmtNum(md.phytoCellsPerL, 0)}</span>
-                      <span className="text-gray-500">Avg Hooks/Line</span><span>{fmtNum(md.averageHooksPerLine, 0)}</span>
-                      <span className="text-gray-500">Hooks Number</span><span>{fmtNum(md.hooksNumber, 0)}</span>
-                      <span className="text-gray-500">Lines/Hauls</span><span>{fmtNum(md.linesHaulsCount, 0)}</span>
-                      <span className="text-gray-500">Gear</span><span>{md.gearType ?? "—"}</span>
-                      <span className="text-gray-500">Mitigation</span><span>{md.mitigationDeviceCode ?? "—"}</span>
+                    <div className="definition-grid text-small">
+                      <span className="definition-grid__label">Water temp (°C)</span><span>{fmtNum(md.waterTempC)}</span>
+                      <span className="definition-grid__label">Catch depth (m)</span><span>{fmtNum(md.catchDepthM)}</span>
+                      <span className="definition-grid__label">Visibility (m)</span><span>{fmtNum(md.visibilityM)}</span>
+                      <span className="definition-grid__label">Bottom depth (m)</span><span>{fmtNum(md.bottomDepthMetres)}</span>
+                      <span className="definition-grid__label">Chl-a (µg/L)</span><span>{fmtNum(md.chlorophyllAUgL, 3)}</span>
+                      <span className="definition-grid__label">Phyto cells (/L)</span><span>{fmtNum(md.phytoCellsPerL, 0)}</span>
+                      <span className="definition-grid__label">Avg hooks/line</span><span>{fmtNum(md.averageHooksPerLine, 0)}</span>
+                      <span className="definition-grid__label">Hooks number</span><span>{fmtNum(md.hooksNumber, 0)}</span>
+                      <span className="definition-grid__label">Lines / hauls</span><span>{fmtNum(md.linesHaulsCount, 0)}</span>
+                      <span className="definition-grid__label">Gear</span><span>{md.gearType ?? "—"}</span>
+                      <span className="definition-grid__label">Mitigation</span><span>{md.mitigationDeviceCode ?? "—"}</span>
                     </div>
                   )}
 
                   {/* Species table */}
                   {sp.length === 0 ? (
-                    <div className="text-xs text-gray-600 mt-2">No species rows.</div>
+                    <div className="text-small text-muted">No species rows.</div>
                   ) : (
-                    <div className="overflow-x-auto mt-2">
-                      <table className="min-w-full text-xs">
+                    <div className="table-container">
+                      <table className="data-table data-table--dense">
                         <thead>
-                          <tr className="text-left text-gray-500">
-                            <th className="py-1 pr-3">SpeciesId</th>
-                            <th className="py-1 pr-3">Qty</th>
-                            <th className="py-1 pr-3">Avg Len (cm)</th>
-                            <th className="py-1 pr-3">Green Wt (kg)</th>
+                          <tr>
+                            <th>SpeciesId</th>
+                            <th>Qty</th>
+                            <th>Avg len (cm)</th>
+                            <th>Green wt (kg)</th>
                           </tr>
                         </thead>
                         <tbody>
                           {sp.map((row) => (
-                            <tr key={row.catchSpeciesId} className="border-t border-gray-200">
-                              <td className="py-1 pr-3">{row.fishSpeciesId}</td>
-                              <td className="py-1 pr-3">{fmtNum(row.quantity, 0)}</td>
-                              <td className="py-1 pr-3">{fmtNum(row.avgLengthCm, 1)}</td>
-                              <td className="py-1 pr-3">{fmtNum(row.greenweightKg, 1)}</td>
+                            <tr key={row.catchSpeciesId}>
+                              <td>{row.fishSpeciesId}</td>
+                              <td>{fmtNum(row.quantity, 0)}</td>
+                              <td>{fmtNum(row.avgLengthCm, 1)}</td>
+                              <td>{fmtNum(row.greenweightKg, 1)}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -329,7 +331,7 @@ function TripDetails({
             })}
           </ul>
         )}
-      </div>
+      </section>
     </div>
   );
 }
