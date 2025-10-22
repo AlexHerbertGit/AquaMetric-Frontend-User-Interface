@@ -396,11 +396,12 @@ code {
 .button--primary, .btn.btn-primary {
   background: linear-gradient(135deg, var(--color-accent), var(--color-accent-strong));
   border-color: rgba(99, 163, 255, 0.5);
-  box-shadow: 0 18px 45px rgba(62, 132, 255, 0.4);
+  box-shadow: 0 10px 25px rgba(62, 132, 255, 0.4);
 }
 
 .button--primary:hover, .btn.btn-primary:hover {
   background: linear-gradient(135deg, var(--color-accent-strong), var(--color-accent));
+  color: #000000;
 }
 
 .button--ghost {
