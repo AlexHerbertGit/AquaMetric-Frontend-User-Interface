@@ -46,6 +46,14 @@ function calcAverageSpeedKmh(
   return Math.round((totalDistanceKm / hours) * 10) / 10;
 }
 
+function parseCoordinateInput(value: string): number | undefined {
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+
 export default function TripCreate() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -56,9 +64,15 @@ export default function TripCreate() {
 
   // Form fields
   const [fishingVesselId, setFishingVesselId] = useState<number>(0);
+  const [masterOrFisherName, setMasterOrFisherName] = useState<string>("");
+  const [isVesselUsed, setIsVesselUsed] = useState<boolean>(true);
   const [departureLocal, setDepartureLocal] = useState<string>("");
   const [returnLocal, setReturnLocal] = useState<string>("");
   const [totalDistanceKm, setTotalDistanceKm] = useState<number>(0);
+  const [startLatitude, setStartLatitude] = useState<string>("");
+  const [startLongitude, setStartLongitude] = useState<string>("");
+  const [endLatitude, setEndLatitude] = useState<string>("");
+  const [endLongitude, setEndLongitude] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
 
   // Derived
@@ -122,6 +136,12 @@ export default function TripCreate() {
       return;
     }
 
+    const masterName = masterOrFisherName.trim();
+    if (!masterName) {
+      setError("Please enter the master or fisher responsible for this trip.");
+      return;
+    }
+
     const departureDateTime = toIsoUtc(departureLocal);
     const returnDateTime = toIsoUtc(returnLocal);
     const averageSpeedKmh = calcAverageSpeedKmh(
@@ -139,6 +159,12 @@ export default function TripCreate() {
       totalDistanceKm,
       daysAtSea,
       averageSpeedKmh,
+      masterOrFisherName: masterName,
+      isVesselUsed,
+      startLatitude: parseCoordinateInput(startLatitude),
+      startLongitude: parseCoordinateInput(startLongitude),
+      endLatitude: parseCoordinateInput(endLatitude),
+      endLongitude: parseCoordinateInput(endLongitude),
       notes: notes?.trim() || undefined,
     };
 
@@ -186,10 +212,33 @@ export default function TripCreate() {
                 </option>
               ))}
             </select>
+            {!loadingVessels && vessels.length === 0 && (
             <span className="field__hint">
                 No vessels found for your organisation. <Link to="/vessels/new">Create one</Link> and return here.
             </span>
-            
+            )}
+          </div>
+
+          <div className="form-grid form-grid--two">
+            <label className="field">
+              <span className="field__label">Master / fisher</span>
+              <input
+                type="text"
+                value={masterOrFisherName}
+                onChange={(e) => setMasterOrFisherName(e.target.value)}
+                placeholder="e.g. Captain Maria Rodriguez"
+                required
+              />
+            </label>
+
+            <label className="field field--checkbox">
+              <input
+                type="checkbox"
+                checked={isVesselUsed}
+                onChange={(e) => setIsVesselUsed(e.target.checked)}
+              />
+              <span className="field__label">Vessel used on trip</span>
+            </label>
           </div>
 
            <div className="form-grid form-grid--two">
@@ -232,6 +281,58 @@ export default function TripCreate() {
               />
             </label>
           </div>
+
+           <fieldset className="stack-sm">
+            <legend className="field__label">Trip coordinates</legend>
+            <div className="form-grid form-grid--two">
+              <label className="field">
+                <span className="field__label">Start latitude</span>
+                <input
+                  type="number"
+                  value={startLatitude}
+                  onChange={(e) => setStartLatitude(e.target.value)}
+                  step="0.000001"
+                  placeholder="e.g. -41.2865"
+                />
+              </label>
+
+              <label className="field">
+                <span className="field__label">Start longitude</span>
+                <input
+                  type="number"
+                  value={startLongitude}
+                  onChange={(e) => setStartLongitude(e.target.value)}
+                  step="0.000001"
+                  placeholder="e.g. 174.7762"
+                />
+              </label>
+            </div>
+
+            <div className="form-grid form-grid--two">
+              <label className="field">
+                <span className="field__label">End latitude</span>
+                <input
+                  type="number"
+                  value={endLatitude}
+                  onChange={(e) => setEndLatitude(e.target.value)}
+                  step="0.000001"
+                  placeholder="e.g. -40.9006"
+                />
+              </label>
+
+              <label className="field">
+                <span className="field__label">End longitude</span>
+                <input
+                  type="number"
+                  value={endLongitude}
+                  onChange={(e) => setEndLongitude(e.target.value)}
+                  step="0.000001"
+                  placeholder="e.g. 172.8344"
+                />
+              </label>
+            </div>
+            <span className="field__hint">Optional. Leave blank if coordinates are unavailable.</span>
+          </fieldset>
 
           <label className="field">
             <span className="field__label">Notes</span>
@@ -286,6 +387,12 @@ export default function TripCreate() {
                   returnLocal,
                   daysAtSea
                 ),
+                masterOrFisherName: masterOrFisherName.trim() || undefined,
+                isVesselUsed,
+                startLatitude: parseCoordinateInput(startLatitude),
+                startLongitude: parseCoordinateInput(startLongitude),
+                endLatitude: parseCoordinateInput(endLatitude),
+                endLongitude: parseCoordinateInput(endLongitude),
                 notes: notes?.trim() || undefined,
               },
               null,
