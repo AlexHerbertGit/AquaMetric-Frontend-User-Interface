@@ -269,7 +269,7 @@ code {
 
 .brand-logo {
   display: flex;
-  max-width: 400px;
+  max-width: 800px;
 }
 
 /* Surfaces */
@@ -550,7 +550,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 }
 
 .nav-logo {
-  max-height: 75px;
+  max-height: 100px;
 }
 
 @media (prefers-color-scheme: light) {

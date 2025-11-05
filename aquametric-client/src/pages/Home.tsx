@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import aquametricLogo from "../assets/aquamteric-logo.png"
+import aquametricLogo from "../assets/AquaMetric Logo V2.png"
 
 export default function Landing() {
   return (
@@ -9,7 +9,7 @@ export default function Landing() {
       </div>
       <div className="stack-lg">
         <div className="stack-sm text-center">
-          <h1 className="display">Manage your fisheries data in one place</h1>
+          <h3 className="display">Manage your fisheries data in one place</h3>
           <p className="text-muted">
             Welcome aboard! Create an account to join your organisation and start managing vessels, trips, and ingestion
             workflows, or jump back in if you already have an account.

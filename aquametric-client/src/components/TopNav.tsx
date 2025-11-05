@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import aquametricLogo from "../assets/aquamteric-logo.png";
+import aquametricLogo from "../assets/AquaMetric Logo V2.png";
 
 var logo = aquametricLogo
 export default function TopNav() {

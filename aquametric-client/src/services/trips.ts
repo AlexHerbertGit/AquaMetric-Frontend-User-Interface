@@ -120,6 +120,12 @@ export async function listTripsByUser(userId: number): Promise<TripReadDto[]> {
   return data;
 }
 
+export async function getTripById(tripId: number): Promise<TripReadDto> {
+  const { data } = await api.get(`/api/fishingtrips/${tripId}`);
+  return data;
+}
+
+
 export async function getCatchesForTrip(tripId: number): Promise<CatchReadDto[]> {
   const { data } = await api.get(`/api/catchquery/by-trip/${tripId}`);
   return data;
