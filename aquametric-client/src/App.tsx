@@ -36,7 +36,7 @@ export default function App() {
             <Route path="/vessels/new" element={<Protected><VesselCreate /></Protected>} />
             <Route path="/vessels" element={<Protected><VesselList /></Protected>} />
             <Route path="/trips/new" element={<Protected><TripCreate /></Protected>} />
-            <Route path="/ingestion" element={<CsvIngestion />} />
+            <Route path="/csvingestion/new" element={<CsvIngestion />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
