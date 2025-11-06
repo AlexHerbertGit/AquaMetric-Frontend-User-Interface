@@ -54,7 +54,7 @@ export default function Dashboard() {
             <span className="badge">Step 3</span>
             <h3>Upload CSV data</h3>
             <p className="text-muted">Ingest MPI e-log data to populate catches, species, and trip metadata.</p>
-            <Link to="/ingestion" className="button button--primary">Upload CSV</Link>
+            <Link to="/csvingestion/new" className="button button--primary">Upload CSV</Link>
           </article>
         </div>
       </div>
